@@ -1,0 +1,209 @@
+<div class="app-root admin-theme">
+
+  @if (currentView() === 'login') {
+    <div class="auth-container">
+      <div class="glass-panel auth-card zoom-in">
+        <h2 class="title">Admin Portal</h2>
+        <p class="subtitle">PG/PhD Guide Dashboard</p>
+        
+        @if (errorMsg()) {
+          <p style="color: #ef4444; margin-bottom: 10px">{{ errorMsg() }}</p>
+        }
+
+        <form (submit)="handleLogin($event)">
+          <div class="input-group">
+            <label>Guide ID / Email</label>
+            <input type="email" name="email" placeholder="guide@university.edu" required />
+          </div>
+          <div class="input-group">
+            <label>Password</label>
+            <input type="password" name="password" placeholder="••••••••" required />
+          </div>
+          <button type="submit" class="primary-btn">Sign In</button>
+        </form>
+        <p class="switch-text">
+          New guide? <span (click)="switchView('register')" class="link">Apply here</span>
+        </p>
+      </div>
+    </div>
+  }
+
+  @if (currentView() === 'register') {
+    <div class="auth-container">
+      <div class="glass-panel auth-card fade-in">
+        <h2 class="title">Admin Onboarding</h2>
+        <p class="subtitle">Register as Guide</p>
+        
+        @if (errorMsg()) {
+          <p style="color: #ef4444; margin-bottom: 10px">{{ errorMsg() }}</p>
+        }
+
+        <form (submit)="handleRegister($event)">
+          <div class="input-group">
+            <label>Full Name & Title</label>
+            <input type="text" name="fullName" placeholder="Dr. Sarah Jenkins" required />
+          </div>
+          <div class="input-group">
+            <label>Department</label>
+            <input type="text" name="department" placeholder="Computer Science" required />
+          </div>
+          <div class="input-group">
+            <label>University Email</label>
+            <input type="email" name="email" placeholder="guide@university.edu" required />
+          </div>
+          <div class="input-group">
+            <label>Password</label>
+            <input type="password" name="password" placeholder="••••••••" required />
+          </div>
+          <button type="submit" class="primary-btn">Register</button>
+        </form>
+        <p class="switch-text">
+          Already have an account? <span (click)="switchView('login')" class="link">Login</span>
+        </p>
+      </div>
+    </div>
+  }
+
+  @if (currentView() === 'dashboard') {
+    <div class="dashboard-container">
+      <nav class="glass-panel sidebar">
+        <h2 class="logo">Admin Hub</h2>
+        <ul class="nav-links">
+          <li [class.active]="activeTab() === 'milestones'" (click)="switchTab('milestones')">🎯 Student Milestones</li>
+          <li [class.active]="activeTab() === 'meetings'" (click)="switchTab('meetings')">📅 Schedule Overview</li>
+          <li [class.active]="activeTab() === 'qa'" (click)="switchTab('qa')">💬 Q&A Board</li>
+        </ul>
+        <button (click)="logout()" class="logout-btn">Log Out</button>
+      </nav>
+      <main class="dashboard-main">
+        <header class="glass-panel header">
+          <h1>Guide Workspace</h1>
+          <div class="user-profile" style="font-weight: bold; display: flex; align-items: center; gap: 10px;">
+            <div style="width: 35px; height: 35px; border-radius: 50%; background: #10b981; display: flex; align-items: center; justify-content: center; color: white;">
+              {{ currentUser()?.fullName?.charAt(0) || 'A' }}
+            </div>
+            {{ currentUser()?.fullName || 'Admin' }}
+            <span style="font-size: 0.8rem; font-weight: normal; color: #9ca3af; margin-left: 5px;">
+               ({{ currentUser()?.department || 'Main Department' }})
+            </span>
+          </div>
+        </header>
+        
+        <div class="glass-panel main-content">
+          @switch (activeTab()) {
+            
+            @case ('milestones') {
+              <div class="tab-content fade-in">
+                <h3>Student Milestone Approvals</h3>
+                <p>Approve or request revisions on thesis stages.</p>
+                <div class="kanban-board">
+                  
+                  <div class="kanban-col">
+                    <h4>Awaiting Review</h4>
+                    @if (pendingMilestones().length === 0) { <p style="text-align: center; color: #9ca3af; font-size: 0.8rem;">No pending approvals.</p> }
+                    @for (m of pendingMilestones(); track m._id) {
+                      <div class="kanban-card">
+                        <strong>{{ m.title }}</strong><br>
+                        <small style="color: #9ca3af">{{ m.studentName }}</small>
+                        <div style="margin-top: 10px; display: flex; gap: 5px;">
+                          <button class="primary-btn sm-btn" (click)="updateMilestone(m._id, 'approved')">Approve</button>
+                          <button class="secondary-btn sm-btn" style="margin-top: 0;" (click)="updateMilestone(m._id, 'revision')">Revise</button>
+                        </div>
+                      </div>
+                    }
+                  </div>
+                  
+                  <div class="kanban-col">
+                    <h4>In Revision</h4>
+                    @if (revisionMilestones().length === 0) { <p style="text-align: center; color: #9ca3af; font-size: 0.8rem;">No revisions.</p> }
+                    @for (m of revisionMilestones(); track m._id) {
+                      <div class="kanban-card" style="border-left-color: #f59e0b;">
+                        <strong>{{ m.title }}</strong><br>
+                        <small style="color: #9ca3af">{{ m.studentName }}</small>
+                        <div style="margin-top: 10px; display: flex; gap: 5px;">
+                          <button class="primary-btn sm-btn" (click)="updateMilestone(m._id, 'approved')">Approve Now</button>
+                        </div>
+                      </div>
+                    }
+                  </div>
+                  
+                  <div class="kanban-col">
+                    <h4>Approved</h4>
+                    @if (approvedMilestones().length === 0) { <p style="text-align: center; color: #9ca3af; font-size: 0.8rem;">No approved stages yet.</p> }
+                    @for (m of approvedMilestones(); track m._id) {
+                      <div class="kanban-card" style="border-left-color: #10b981; opacity: 0.7;">
+                        <strong>{{ m.title }}</strong><br>
+                        <small style="color: #9ca3af">{{ m.studentName }}</small>
+                      </div>
+                    }
+                  </div>
+
+                </div>
+              </div>
+            }
+            @case ('meetings') {
+              <div class="tab-content fade-in">
+                <h3>Meeting Scheduler & Logs</h3>
+                <p>Approve incoming meeting requests from students.</p>
+                
+                <h4 style="margin-top: 20px;">Pending Meeting Requests</h4>
+                @if (pendingMeetings().length === 0) { <p style="color: #9ca3af;">No pending meeting requests.</p> }
+                <div class="upcoming-meetings">
+                  @for (m of pendingMeetings(); track m._id) {
+                    <div class="meeting-card">
+                      <strong>{{ m.studentName }}</strong> requested a meeting on <strong>{{ m.date | date:'mediumDate' }}</strong> at <strong>{{ m.time }}</strong>.
+                      <div style="margin-top: 10px; display:flex; gap: 10px;">
+                        <button class="primary-btn sm-btn" (click)="updateMeeting(m._id, 'accepted')">Accept</button>
+                        <button class="secondary-btn sm-btn" style="margin-top:0" (click)="updateMeeting(m._id, 'rejected')">Decline</button>
+                      </div>
+                    </div>
+                  }
+                </div>
+
+                <h4 style="margin-top: 40px;">Accepted Meetings</h4>
+                @if (acceptedMeetings().length === 0) { <p style="color: #9ca3af;">No scheduled meetings.</p> }
+                <div class="upcoming-meetings">
+                  @for (m of acceptedMeetings(); track m._id) {
+                    <div class="meeting-card" style="border-left: 4px solid #10b981;">
+                      Accepted: <strong>{{ m.studentName }}</strong> on <strong>{{ m.date | date:'mediumDate' }}</strong> at <strong>{{ m.time }}</strong>.
+                    </div>
+                  }
+                </div>
+              </div>
+            }
+            @case ('qa') {
+              <div class="tab-content fade-in">
+                <h3>Q&A Board (Live Communication)</h3>
+                <div class="chat-box" #chatbox>
+                  @if (apiService.messages().length === 0) {
+                    <p style="text-align: center; color: #9ca3af; margin-top: 2rem;">No messages yet. Say hello!</p>
+                  }
+                  
+                  @for (msg of apiService.messages(); track msg._id) {
+                    <div class="msg" [class.guide]="msg.senderRole === 'guide'" [class.student]="msg.senderRole === 'student'" 
+                         [style.align-self]="msg.senderRole === 'guide' ? 'flex-end' : 'flex-start'"
+                         [style.margin-left]="msg.senderRole === 'guide' ? 'auto' : '0'">
+                      <strong>
+                        {{ msg.senderName }} 
+                        <span style="font-size: 0.75rem; padding: 2px 6px; border-radius: 4px;"
+                              [style.background]="msg.senderRole === 'guide' ? '#ffffff33' : '#f3f4f6'"
+                              [style.color]="msg.senderRole === 'guide' ? '#ffffff' : '#003366'">
+                          {{ msg.senderRole === 'guide' ? 'Guide' : 'Student' }}
+                        </span>:
+                      </strong> {{ msg.text }}
+                    </div>
+                  }
+                </div>
+                <div class="input-group row">
+                  <input type="text" #chatInput (keyup.enter)="sendReply(chatInput)" placeholder="Type a message..." style="width: 80%" />
+                  <button class="primary-btn" style="width: 20%" (click)="sendReply(chatInput)">Send</button>
+                </div>
+              </div>
+            }
+          }
+        </div>
+      </main>
+    </div>
+  }
+
+</div>

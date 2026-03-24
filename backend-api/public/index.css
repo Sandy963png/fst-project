@@ -1,0 +1,134 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+body {
+    background-color: #f4f6f8;
+    color: #333333;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+}
+
+.gateway-container {
+    width: 100%;
+    max-width: 900px;
+    padding: 2rem;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.uni-header {
+    text-align: center;
+    margin-bottom: 2rem;
+    border-bottom: 2px solid #003366;
+    padding-bottom: 1rem;
+    width: 100%;
+}
+
+.uni-header h1 {
+    font-family: 'Georgia', serif;
+    color: #003366;
+    font-size: 2.5rem;
+    margin-bottom: 0.5rem;
+}
+
+.uni-header p {
+    font-size: 1.1rem;
+    color: #555;
+    font-weight: 500;
+}
+
+.portal-grid {
+    display: flex;
+    gap: 2rem;
+    width: 100%;
+    justify-content: center;
+    flex-wrap: wrap;
+}
+
+.portal-card {
+    background: #ffffff;
+    border: 1px solid #dcdcdc;
+    border-top: 4px solid #003366;
+    border-radius: 4px;
+    padding: 2.5rem 2rem;
+    width: 320px;
+    text-align: center;
+    text-decoration: none;
+    color: inherit;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+    transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.portal-card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.1);
+}
+
+.portal-icon {
+    font-size: 3.5rem;
+    margin-bottom: 1rem;
+    color: #003366;
+}
+
+.portal-card h2 {
+    font-size: 1.5rem;
+    color: #003366;
+    margin-bottom: 0.5rem;
+}
+
+.portal-card p {
+    font-size: 0.95rem;
+    color: #666;
+    margin-bottom: 1.5rem;
+}
+
+.portal-btn {
+    display: inline-block;
+    background-color: #003366;
+    color: #ffffff;
+    padding: 0.75rem 1.5rem;
+    border-radius: 4px;
+    font-weight: bold;
+    width: 100%;
+    border: none;
+    cursor: pointer;
+    transition: background-color 0.2s;
+}
+
+.portal-card.admin-card {
+    border-top: 4px solid #800000;
+}
+
+.portal-card.admin-card .portal-icon {
+    color: #800000;
+}
+
+.portal-card.admin-card h2 {
+    color: #800000;
+}
+
+.portal-card.admin-card .portal-btn {
+    background-color: #800000;
+}
+
+.portal-card.admin-card .portal-btn:hover {
+    background-color: #600000;
+}
+
+.portal-card .portal-btn:hover {
+    background-color: #002244;
+}
+
+.uni-footer {
+    margin-top: 3rem;
+    text-align: center;
+    font-size: 0.85rem;
+    color: #777;
+}

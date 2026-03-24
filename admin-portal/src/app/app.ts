@@ -1,6 +1,7 @@
 import { Component, signal, inject, OnInit, computed, ViewChild, ElementRef, AfterViewChecked } from '@angular/core';
 import { CommonModule } from '@angular/common'; 
 import { ApiService } from './api.service';
+import { environment } from '../environments/environment';
 
 @Component({
   selector: 'app-root',
@@ -57,7 +58,7 @@ export class App implements OnInit, AfterViewChecked {
     const password = (form.elements.namedItem('password') as HTMLInputElement).value;
 
     try {
-      const res = await fetch('http://localhost:3000/api/admin/login', {
+      const res = await fetch(`${environment.apiUrl}/api/admin/login`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email, password })
@@ -85,7 +86,7 @@ export class App implements OnInit, AfterViewChecked {
     const password = (form.elements.namedItem('password') as HTMLInputElement).value;
 
     try {
-      const res = await fetch('http://localhost:3000/api/admin/register', {
+      const res = await fetch(`${environment.apiUrl}/api/admin/register`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ fullName, department, email, password })

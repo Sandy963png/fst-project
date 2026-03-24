@@ -1,3 +1,4 @@
+require('dotenv').config();
 const express = require('express');
 const cors = require('cors');
 const mongoose = require('mongoose');
@@ -18,7 +19,7 @@ app.use(express.json());
 app.use(express.static(path.join(__dirname, 'public')));
 
 // MongoDB connection (Switching to dynamic URI for MongoDB Atlas)
-const DB_URI = process.env.MONGO_URI || 'mongodb://127.0.0.1:27017/fst_guide_hub';
+const DB_URI = process.env.MONGO_URI || 'mongodb+srv://Sandeep:123@cluster0.wrjfsnx.mongodb.net/fst_guide_hub?appName=Cluster0';
 
 mongoose.connect(DB_URI)
     .then(() => console.log('✅ Connected to MongoDB Database successfully!'))

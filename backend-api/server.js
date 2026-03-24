@@ -10,7 +10,7 @@ const PORT = process.env.PORT || 3000;
 
 // CORS logic (Important for cloud deployments)
 const corsOptions = {
-  origin: process.env.CORS_ORIGIN || ['http://localhost:5173', 'http://localhost:4200'],
+  origin: '*', // Automatically allows Vercel Domains
   optionsSuccessStatus: 200
 };
 app.use(cors(corsOptions));

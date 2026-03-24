@@ -34,7 +34,7 @@ export class ApiService {
   private meetingsSignal = signal<any[]>([]);
   private unreadSignal = signal<number>(0);
 
-  private apiUrl = environment.apiUrl;
+  private apiUrl = environment.apiUrl + '/api';
   
   messages = signal<Message[]>([]);
   milestones = signal<Milestone[]>([]);

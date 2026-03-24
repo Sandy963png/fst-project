@@ -1,4 +1,4 @@
 export const environment = {
   production: false,
-  apiUrl: 'https://fst-project.onrender.com/api'
+  apiUrl: 'http://localhost:5000'
 };

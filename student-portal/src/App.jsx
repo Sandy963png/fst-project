@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import './index.css';
 function App() {
   const [currentView, setCurrentView] = useState('login');
@@ -22,28 +22,28 @@ function App() {
 
   const API_BASE = import.meta.env.VITE_API_URL || 'https://fst-project.onrender.com';
 
-  const fetchMessages = async () => {
+  const fetchMessages = useCallback(async () => {
     try {
       const res = await fetch(`${API_BASE}/api/messages`);
       if (res.ok) setMessages(await res.json());
     } catch (err) { }
-  };
+  }, [API_BASE]);
 
-  const fetchMilestones = async () => {
+  const fetchMilestones = useCallback(async () => {
     if (!currentUser?.email) return;
     try {
       const res = await fetch(`${API_BASE}/api/milestones/student/${currentUser.email}`);
       if (res.ok) setMilestones(await res.json());
     } catch (err) { }
-  };
+  }, [currentUser?.email, API_BASE]);
 
-  const fetchMeetings = async () => {
+  const fetchMeetings = useCallback(async () => {
     if (!currentUser?.email) return;
     try {
       const res = await fetch(`${API_BASE}/api/meetings/student/${currentUser.email}`);
       if (res.ok) setMeetings(await res.json());
     } catch (err) { }
-  };
+  }, [currentUser?.email, API_BASE]);
 
   useEffect(() => {
     let interval;
@@ -58,7 +58,7 @@ function App() {
       }, 3000);
     }
     return () => clearInterval(interval);
-  }, [currentView, currentUser]);
+  }, [currentView, fetchMessages, fetchMilestones, fetchMeetings]);
 
   const sendMessage = async () => {
     if (!inputText.trim()) return;
@@ -244,7 +244,7 @@ function App() {
               {messages.length === 0 && <p style={{ textAlign: 'center', color: '#9ca3af', marginTop: '2rem' }}>No messages yet.</p>}
               {messages.map((msg, idx) => (
                 <div key={msg._id || idx} className={`msg ${msg.senderRole === 'guide' ? 'guide' : 'student'}`} style={msg.senderRole === 'student' ? { alignSelf: 'flex-end', marginLeft: 'auto' } : {}}>
-                  <strong>{msg.senderName} <span style={{fontSize: '0.75rem', padding: '2px 6px', borderRadius: '4px', background: msg.senderRole === 'guide' ? '#f3f4f6' : '#ffffff33', color: msg.senderRole === 'guide' ? '#800000' : '#ffffff'}}>{msg.senderRole === 'guide' ? 'Guide' : 'Student'}</span>:</strong> {msg.text}
+                  <strong>{msg.senderName} <span style={{ fontSize: '0.75rem', padding: '2px 6px', borderRadius: '4px', background: msg.senderRole === 'guide' ? '#f3f4f6' : '#ffffff33', color: msg.senderRole === 'guide' ? '#800000' : '#ffffff' }}>{msg.senderRole === 'guide' ? 'Guide' : 'Student'}</span>:</strong> {msg.text}
                 </div>
               ))}
             </div>

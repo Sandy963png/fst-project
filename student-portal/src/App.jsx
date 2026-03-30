@@ -24,7 +24,7 @@ function App() {
 
   const fetchMessages = useCallback(async () => {
     try {
-      const res = await fetch(`${API_BASE}/api/messages`);
+      const res = await fetch(`${API_BASE}/api/messages`, { headers: { 'Authorization': `Bearer ${localStorage.getItem('hub_token')}` } });
       if (res.ok) setMessages(await res.json());
     } catch (err) { }
   }, [API_BASE]);
@@ -32,7 +32,7 @@ function App() {
   const fetchMilestones = useCallback(async () => {
     if (!currentUser?.email) return;
     try {
-      const res = await fetch(`${API_BASE}/api/milestones/student/${currentUser.email}`);
+      const res = await fetch(`${API_BASE}/api/milestones/student/${currentUser.email}`, { headers: { 'Authorization': `Bearer ${localStorage.getItem('hub_token')}` } });
       if (res.ok) setMilestones(await res.json());
     } catch (err) { }
   }, [currentUser?.email, API_BASE]);
@@ -40,7 +40,7 @@ function App() {
   const fetchMeetings = useCallback(async () => {
     if (!currentUser?.email) return;
     try {
-      const res = await fetch(`${API_BASE}/api/meetings/student/${currentUser.email}`);
+      const res = await fetch(`${API_BASE}/api/meetings/student/${currentUser.email}`, { headers: { 'Authorization': `Bearer ${localStorage.getItem('hub_token')}` } });
       if (res.ok) setMeetings(await res.json());
     } catch (err) { }
   }, [currentUser?.email, API_BASE]);
@@ -65,7 +65,7 @@ function App() {
     try {
       const res = await fetch(`${API_BASE}/api/messages`, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${localStorage.getItem('hub_token')}` },
         body: JSON.stringify({ senderName: currentUser.fullName, senderRole: 'student', text: inputText })
       });
       if (res.ok) {
@@ -81,7 +81,7 @@ function App() {
     try {
       const res = await fetch(`${API_BASE}/api/milestones`, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${localStorage.getItem('hub_token')}` },
         body: JSON.stringify({ title: milestoneInput, studentEmail: currentUser.email, studentName: currentUser.fullName })
       });
       if (res.ok) {
@@ -97,7 +97,7 @@ function App() {
     try {
       const res = await fetch(`${API_BASE}/api/meetings`, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${localStorage.getItem('hub_token')}` },
         body: JSON.stringify({
           studentEmail: currentUser.email,
           studentName: currentUser.fullName,
@@ -125,6 +125,7 @@ function App() {
       });
       const data = await res.json();
       if (res.ok) {
+        localStorage.setItem('hub_token', data.token);
         setCurrentUser(data.student);
         setCurrentView('dashboard');
       } else setErrorMsg(data.message || 'Login failed');
@@ -142,6 +143,7 @@ function App() {
       });
       const data = await res.json();
       if (res.ok) {
+        localStorage.setItem('hub_token', data.token);
         setCurrentUser(data.student);
         setCurrentView('dashboard');
       } else setErrorMsg(data.message || 'Registration failed');
@@ -264,7 +266,7 @@ function App() {
           <li className={activeTab === 'meetings' ? 'active' : ''} onClick={() => setActiveTab('meetings')}>📅 Meetings</li>
           <li className={activeTab === 'qa' ? 'active' : ''} onClick={() => setActiveTab('qa')}>💬 Q&A Board</li>
         </ul>
-        <button onClick={() => { setCurrentUser(null); setCurrentView('login'); }} className="logout-btn">Log Out</button>
+        <button onClick={() => { localStorage.removeItem('hub_token'); setCurrentUser(null); setCurrentView('login'); }} className="logout-btn">Log Out</button>
       </nav>
       <main className="dashboard-main">
         <header className="glass-panel header">

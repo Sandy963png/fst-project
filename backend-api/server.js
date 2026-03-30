@@ -3,6 +3,9 @@ const express = require('express');
 const cors = require('cors');
 const mongoose = require('mongoose');
 const path = require('path');
+const jwt = require('jsonwebtoken');
+
+const JWT_SECRET = process.env.JWT_SECRET || 'your_super_secret_key';
 
 const app = express();
 // Ensure server respects the hosting provider's assigned ENV PORT
@@ -17,6 +20,8 @@ app.use(cors(corsOptions));
 app.use(express.json());
 
 app.use(express.static(path.join(__dirname, 'public')));
+app.set('view engine', 'ejs');
+app.set('views', path.join(__dirname, 'views'));
 
 // MongoDB connection (Switching to dynamic URI for MongoDB Atlas)
 const DB_URI = process.env.MONGO_URI || 'mongodb+srv://Sandeep:123@cluster0.wrjfsnx.mongodb.net/fst_guide_hub?appName=Cluster0';
@@ -67,6 +72,24 @@ const Admin = mongoose.model('Admin', adminSchema);
 const Message = mongoose.model('Message', messageSchema);
 const Milestone = mongoose.model('Milestone', milestoneSchema);
 const Meeting = mongoose.model('Meeting', meetingSchema);
+
+const authenticateJWT = (req, res, next) => {
+    const authHeader = req.headers.authorization;
+    if (authHeader) {
+        const token = authHeader.split(' ')[1];
+        jwt.verify(token, JWT_SECRET, (err, user) => {
+            if (err) return res.status(403).json({ message: 'Forbidden' });
+            req.user = user;
+            next();
+        });
+    } else {
+        res.status(401).json({ message: 'Unauthorized' });
+    }
+};
+
+app.use('/api/milestones', authenticateJWT);
+app.use('/api/meetings', authenticateJWT);
+app.use('/api/messages', authenticateJWT);
 
 app.post('/api/milestones', async (req, res) => {
     try {
@@ -198,7 +221,8 @@ app.post('/api/student/login', async (req, res) => {
         });
         if (!student) return res.status(401).json({ message: 'Invalid credentials' });
         
-        res.json({ message: 'Login successful', student });
+        const token = jwt.sign({ id: student._id, role: student.role }, JWT_SECRET, { expiresIn: '1d' });
+        res.json({ message: 'Login successful', student, token });
     } catch (error) {
         res.status(500).json({ message: 'Server Error', error: error.message });
     }
@@ -231,7 +255,8 @@ app.post('/api/admin/login', async (req, res) => {
         });
         if (!admin) return res.status(401).json({ message: 'Invalid credentials' });
         
-        res.json({ message: 'Login successful', admin });
+        const token = jwt.sign({ id: admin._id, role: admin.role }, JWT_SECRET, { expiresIn: '1d' });
+        res.json({ message: 'Login successful', admin, token });
     } catch (error) {
         res.status(500).json({ message: 'Server Error', error: error.message });
     }
@@ -239,7 +264,7 @@ app.post('/api/admin/login', async (req, res) => {
 
 app.get('/api/health', (req, res) => res.json({ status: 'OK' }));
 
-app.use((req, res) => res.sendFile(path.join(__dirname, 'public', 'index.html')));
+app.use((req, res) => res.render('index'));
 
 app.listen(PORT, () => {
     console.log(`API Server running securely on port ${PORT}`);

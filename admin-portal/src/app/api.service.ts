@@ -44,7 +44,7 @@ export class ApiService {
 
   async fetchMessages() {
     try {
-      const res = await fetch(`${this.apiUrl}/messages`);
+      const res = await fetch(`${this.apiUrl}/messages`, { headers: { 'Authorization': `Bearer ${localStorage.getItem('hub_token')}` } });
       if (res.ok) this.messages.set(await res.json());
     } catch (error) { console.error('Failed to fetch messages', error); }
   }
@@ -53,7 +53,7 @@ export class ApiService {
     try {
       const res = await fetch(`${this.apiUrl}/messages`, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${localStorage.getItem('hub_token')}` },
         body: JSON.stringify({ senderName, senderRole, text })
       });
       if (res.ok) {
@@ -67,7 +67,7 @@ export class ApiService {
 
   async fetchAllMilestones() {
     try {
-      const res = await fetch(`${this.apiUrl}/milestones`);
+      const res = await fetch(`${this.apiUrl}/milestones`, { headers: { 'Authorization': `Bearer ${localStorage.getItem('hub_token')}` } });
       if (res.ok) this.milestones.set(await res.json());
     } catch (error) { }
   }
@@ -76,7 +76,7 @@ export class ApiService {
     try {
       const res = await fetch(`${this.apiUrl}/milestones/${id}`, {
         method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
+        headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${localStorage.getItem('hub_token')}` },
         body: JSON.stringify({ status })
       });
       if (res.ok) {
@@ -89,7 +89,7 @@ export class ApiService {
 
   async fetchAllMeetings() {
     try {
-      const res = await fetch(`${this.apiUrl}/meetings`);
+      const res = await fetch(`${this.apiUrl}/meetings`, { headers: { 'Authorization': `Bearer ${localStorage.getItem('hub_token')}` } });
       if (res.ok) this.meetings.set(await res.json());
     } catch (error) { }
   }
@@ -98,7 +98,7 @@ export class ApiService {
     try {
       const res = await fetch(`${this.apiUrl}/meetings/${id}`, {
         method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
+        headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${localStorage.getItem('hub_token')}` },
         body: JSON.stringify({ status })
       });
       if (res.ok) {

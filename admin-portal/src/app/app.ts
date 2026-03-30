@@ -66,6 +66,7 @@ export class App implements OnInit, AfterViewChecked {
       const data = await res.json();
       
       if (res.ok) {
+        localStorage.setItem('hub_token', data.token);
         this.currentUser.set(data.admin);
         this.currentView.set('dashboard');
         this.apiService.fetchMessages();
@@ -94,6 +95,7 @@ export class App implements OnInit, AfterViewChecked {
       const data = await res.json();
       
       if (res.ok) {
+        localStorage.setItem('hub_token', data.token);
         this.currentUser.set(data.admin);
         this.currentView.set('dashboard');
         this.apiService.fetchMessages();
@@ -134,6 +136,7 @@ export class App implements OnInit, AfterViewChecked {
   }
 
   logout() {
+    localStorage.removeItem('hub_token');
     this.currentUser.set(null);
     this.currentView.set('login');
   }

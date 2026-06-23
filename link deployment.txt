@@ -1,0 +1,3 @@
+angular:https://fst-project-lac.vercel.app/
+react:https://fst-project-react.vercel.app/
+https://fst-project.onrender.com
